@@ -3,6 +3,7 @@ const app = express();
 const port = 5000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const ObjectID = require('mongodb').ObjectID;
 require('dotenv').config();
 
 const MongoClient = require('mongodb').MongoClient;
@@ -15,6 +16,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 client.connect(err => {
     const serviceCollections = client.db("creativeAgency").collection("services");
+    const orderCollections = client.db("creativeAgency").collection("orders");
 
     app.get('/services', (req, res) => {
         serviceCollections.find({})
@@ -23,6 +25,22 @@ client.connect(err => {
             // console.log(documents);
         })
     })
+
+    app.get("/services/:id", (req, res) => {
+        serviceCollections.find({_id: ObjectID(req.params.id)})
+        .toArray((err, documents) =>{
+          res.send(documents[0]);
+        })
+      })
+
+      app.post("/addOrder", (req, res) =>{
+        const order = req.body;
+        orderCollections.insertOne(order)
+        .then(result =>{
+          // console.log('register successfully')
+          res.send(result.insertedCount > 0);
+        })
+      })
 })
 
 
