@@ -65,6 +65,15 @@ client.connect(err => {
           res.send(result.insertedCount > 0);
         })
       })
+
+      app.post("/addServices", (req, res) =>{
+        const addServices = req.body;
+        serviceCollections.insertOne(addServices)
+        .then(result =>{
+          // console.log('register successfully')
+          res.send(result.insertedCount > 0);
+        })
+      })
 })
 
 
